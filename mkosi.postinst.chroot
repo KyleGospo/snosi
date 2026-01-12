@@ -92,4 +92,6 @@ if [[ -f /lib/systemd/system/systemd-sysext.service ]]; then
     systemctl enable systemd-sysext.service || true
 fi
 
+systemctl enable gdm.service
+
 echo "Post-installation complete."

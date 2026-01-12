@@ -9,3 +9,4 @@ mkosi.key
 mkosi.crt
 mkosi.version
 .mkosi-private
+.envrc
