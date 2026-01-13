@@ -94,11 +94,9 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: skopeo login ghcr.io -u ${{ github.actor }} --password ${{ secrets.GHCR_PAT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
 
       - name: Push to registry
         if: github.event_name != 'pull_request'
@@ -108,11 +106,11 @@ jobs:
         run: |
           # Push with version tag
           skopeo copy \
-            --dest-creds="${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
+            --dest-creds="${{ github.actor }}:${{ secrets.GHCR_PAT }}" \
             oci:output/snow \
             docker://${IMAGE}:${{ steps.version.outputs.tag }}
           # Push latest tag
           skopeo copy \
-            --dest-creds="${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
+            --dest-creds="${{ github.actor }}:${{ secrets.GHCR_PAT }}" \
             oci:output/snow \
             docker://${IMAGE}:latest
