@@ -20,6 +20,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Aggressive cleanup
@@ -100,10 +102,17 @@ jobs:
 
       - name: Push to registry
         if: github.event_name != 'pull_request'
+        env:
+          REGISTRY: ghcr.io
+          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
         run: |
+          # Push with version tag
           skopeo copy \
+            --dest-creds="${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
             oci:output/snow \
-            docker://ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.tag }}
+            docker://${IMAGE}:${{ steps.version.outputs.tag }}
+          # Push latest tag
           skopeo copy \
+            --dest-creds="${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
             oci:output/snow \
-            docker://ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            docker://${IMAGE}:latest
