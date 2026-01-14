@@ -14,6 +14,10 @@ env:
   IMAGE_LICENSE: Apache-2.0
   IMAGE_LOGO_URL: "" # Optional: URL to logo image
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
