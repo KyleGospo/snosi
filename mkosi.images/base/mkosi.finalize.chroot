@@ -17,11 +17,6 @@ mkdir /root
 mkdir /home
 mkdir /srv
 
-# Set up ostree sysroot
-if [ ! -d /sysroot ]; then
-  mkdir /sysroot
-  ln -s sysroot/ostree ostree
-fi
 
 # Ensure image first-boot works
 rm -f /etc/machine-id
