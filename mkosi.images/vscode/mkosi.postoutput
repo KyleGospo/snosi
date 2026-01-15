@@ -44,3 +44,9 @@ fi
 # create a symlink to the new extension file
 ln -s "$(basename "$EXTFILENAME.${EXISTING_OUTPUT_FILE##*.}")" "$OUTPUTDIR/${IMAGE_ID}"
 echo "Created symlink: $OUTPUTDIR/${IMAGE_ID} -> $(basename "$EXTFILENAME.${EXISTING_OUTPUT_FILE##*.}")"
+
+# Move sysext to dedicated directory
+SYSEXT_DIR="$OUTPUTDIR/sysexts"
+mkdir -p "$SYSEXT_DIR"
+mv "$EXTFILENAME.${EXISTING_OUTPUT_FILE##*.}" "$SYSEXT_DIR/"
+echo "Moved sysext to: $SYSEXT_DIR/"
