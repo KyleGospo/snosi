@@ -156,10 +156,10 @@ jobs:
           # Push with version tag
           skopeo copy \
             --dest-creds="${{ github.actor }}:${{ secrets.GHCR_PAT }}" \
-            oci:output/snow \
+            oci:output/snowloaded \
             docker://${IMAGE}:${{ steps.version.outputs.tag }}
           # Push latest tag
           skopeo copy \
             --dest-creds="${{ github.actor }}:${{ secrets.GHCR_PAT }}" \
-            oci:output/snow \
+            oci:output/snowloaded \
             docker://${IMAGE}:latest
