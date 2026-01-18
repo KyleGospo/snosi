@@ -5,16 +5,19 @@ set -euo pipefail
 # It performs final customizations
 
 echo "Running post-installation customizations..."
+# Build Initramfs
+KERNEL_VERSION="$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")"
 
-# Download and install external .deb packages
-echo "Installing external packages..."
-TMPDIR=$(mktemp -d)
-trap "rm -rf $TMPDIR" EXIT
+dracut --force --no-hostonly --reproducible --zstd --verbose --add etc-overlay \
+  --kver "$KERNEL_VERSION" "/usr/lib/modules/$KERNEL_VERSION/initramfs.img"
 
+if [ -f "/boot/vmlinuz-$KERNEL_VERSION" ]; then
+  cp -f "/boot/vmlinuz-$KERNEL_VERSION" "/usr/lib/modules/$KERNEL_VERSION/vmlinuz"
+  echo "vmlinuz moved successfully"
+fi
 
-# Remove fish desktop entry
-rm -f /usr/share/applications/fish.desktop
-
+# Clean up .old files
+rm -f /*.old || true
 
 # Move Incus to /usr/share/factory/opt/incus for tmpfiles.d symlinking
 if [[ -d /opt/incus ]]; then
@@ -56,6 +59,35 @@ if [[ -f /usr/lib/os-release ]]; then
     fi
 fi
 
+
+# Use proper home directory for new users
+sed -i 's|.*HOME=/home|HOME=/var/home|' "/etc/default/useradd"
+
+# Enable mounts
+systemctl enable home.mount
+systemctl enable root.mount
+systemctl enable srv.mount
+systemctl enable mnt.mount
+systemctl enable media.mount
+systemctl enable opt.mount
+systemctl enable usr-local.mount
+systemctl enable gdm.service
+
+# Add build information to os-release
+# echo "BUILD_ID=\"$BUILD_ID\"" >> /usr/lib/os-release
+
+# remove bls-garbage-collect from /etc/systemd/system/basic.garget.wants
+rm -rf /etc/systemd/system/basic.target.wants/bls-garbage-collect.service
+
+
+
+# Remove fish desktop entry
+rm -f /usr/share/applications/fish.desktop
+
+
+
+
+
 # Write build date
 echo "Writing build date..."
 mkdir -p /etc
@@ -82,11 +114,6 @@ mkdir -p /var/lib/extensions
 mkdir -p /var/lib/confexts
 mkdir -p /usr/lib/extension-release.d
 
-# Enable systemd-sysext service if available
-if [[ -f /lib/systemd/system/systemd-sysext.service ]]; then
-    systemctl enable systemd-sysext.service || true
-fi
 
-systemctl enable gdm.service
 
 echo "Post-installation complete."
