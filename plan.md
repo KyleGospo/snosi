@@ -20,7 +20,10 @@ legend:
   /tar/ for nspawn
 ```
 
-## Images
+This system defines one base image named `base`, and (currently) two sysext images (docker, incus).
+Profiles are added to the build command to layer configuration needed to build the desired output images.
+
+## Composite Image Definitions
 
 Images don't include kernel or modules, these get added with PROFILES
 
@@ -33,7 +36,7 @@ Images don't include kernel or modules, these get added with PROFILES
 - snowloaded - snow + bp + loaded profile
 - snowfield - snow + surface profile
 
-## Profiles
+## Available Profiles
 
 - stock: stable kernel + modules
 - backports: backport kernel + modules
@@ -57,10 +60,79 @@ All image builds must either have stock or backports profile -- that's the kerne
 - incus = base << incus sysext
 - docker = base << docker sysext
 
-```
-snowloaded> mkosi build --profile backports --profile bootc --profile snow --profile loaded
-snow> mkosi build --profile backports --profile bootc --profile snow
+```bash
+snowloaded> mkosi build --profile snow --profile loaded --profile backports --profile bootc
+snow> mkosi build --profile snow --profile backports --profile bootc
 cayo> mkosi build --profile bootc --profile stock --profile cayo
 ```
+
+## Profiles
+
+Profiles are grouped by precedence importance. Lower numbered profiles should be specified first on the command line.
+
+### Image Profiles "10-image-XXX"
+
+These define the core set of images we're delivering.
+
+- 10-image-cayo: defines the cayo packages and build scripts
+- 10-image-snow: defines the snow packages and build scripts
+
+### Kernel and Modules "20-kernel-XXX"
+
+These define the kernel and kernel modules added to the image.
+
+- 20-kernel-backports: trixie backports kernel and modules
+- 20-kernel-stock: trixie stable kernel and modules
+
+### Extra Packages "30-packages-XXX"
+
+These define extra packages to be added to image variants. The only current example is "30-packages-loaded" which adds Edge, VSCode and NordVPN. Images built with extra packages should have a different oci image name from those without. `snow` vs `snow-loaded`. Imagine `ucore`, `ucore-hci`, `ucore-zfs`, etc.
+
+Stacking packages has not been tested, and might not work without extra config/processing, e.g.`hci` plus `zfs`. For now only add one profile from the `30-packages` group.
+
+- 30-packages-loaded: adds edge, vscode, nordvpn for `snow-loaded` image
+
+### Finalization "80-finalize-XXX"
+
+These profiles define mostly scripts that need to be done to prepare for a specific image type. `bootc` and `nbc` require the kernel image and initrd to be located in specific places on the image.
+
+- 80-finalize-bootc: builds initramfs and moves the kernel.
+
+### Output "90-output-XXX"
+
+These profiles configure the output type of the built image. The "main" image specifies `Output=none`, so an output profile is required to get any output image.
+
+- 90-output-oci: builds the image as an oci-archive directory
+- 90-output-sysext-only: sets the "main" image to no output so only the sysexts will be built
+- 90-output-tar: sets the image to output as a .tar archive. Unused currently, intended for systemd-nspawn output to be used on images.
+
+## Profile Order Matters
+
+Configurations are overlayed in the order of profiles added on the command line.
+
+Given this command line:
+
+```bash
+mkosi build --profile snow --profile backports --profile bootc
+```
+
+The configuration from the `main` image (everything in the root of the repo) is loaded,
+then the `snow` configuration is overlayed, then `backports` on top of that, finally `bootc`.
+
+The same applies for the scripts like `mkosi.postinst` or `mkosi.postoutput` etc.
+They're applied in the same order they're listed on the command line.
+
+An example of how this could break things:
+
+1. The `loaded` profile installs a package with things that get installed to `opt`. As part of post-processing
+   you need to move them to `/usr/something`.
+
+2. The `bootc` profile removes `/opt` and creates an empty directory for mounting `/var/opt`.
+
+If you specify the `bootc` profile before the `loaded` profile, you may not end up with `/opt` in the condition you expect after the image is built.
+
+Because of this, profiles have been named with required precedence hints in the names.
+
+## Warning
 
 actions in this branch are not correct yet!
