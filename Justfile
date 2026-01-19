@@ -7,6 +7,9 @@ clean:
     mkosi clean
 
 
+sysexts: clean
+    mkosi build
+
 cayo: clean
     mkosi --profile 10-image-cayo --profile 20-kernel-stock --profile 80-finalize-bootc --profile 90-output-oci build
 
