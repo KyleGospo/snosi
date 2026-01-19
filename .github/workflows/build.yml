@@ -136,7 +136,8 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           REGISTRY: ghcr.io
-          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          IMAGE_NAME: snow
+          IMAGE: ghcr.io/${{ github.repository_owner }}/snosi-${{ env.IMAGE_NAME }}
         run: |
           # Push with version tag
           skopeo copy \
@@ -156,7 +157,7 @@ jobs:
           # These are picked up by mkosi.postoutput script
           CREATED_DATE: ${{ steps.date.outputs.date }}
           DEFAULT_TAG: ${{ steps.version.outputs.tag }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}-loaded
+          IMAGE_NAME: snow-loaded
           IMAGE_DESC: ${{ env.IMAGE_DESC }}
           IMAGE_KEYWORDS: ${{ env.IMAGE_KEYWORDS }}
           IMAGE_LICENSE: ${{ env.IMAGE_LICENSE }}
@@ -170,7 +171,8 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           REGISTRY: ghcr.io
-          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-loaded
+          IMAGE_NAME: snow-loaded
+          IMAGE: ghcr.io/${{ github.repository_owner }}/snosi-${{ env.IMAGE_NAME }}
         run: |
           # Push with version tag
           skopeo copy \
@@ -190,7 +192,7 @@ jobs:
           # These are picked up by mkosi.postoutput script
           CREATED_DATE: ${{ steps.date.outputs.date }}
           DEFAULT_TAG: ${{ steps.version.outputs.tag }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}-snowfield
+          IMAGE_NAME: snowfield
           IMAGE_DESC: ${{ env.IMAGE_DESC }}
           IMAGE_KEYWORDS: ${{ env.IMAGE_KEYWORDS }}
           IMAGE_LICENSE: ${{ env.IMAGE_LICENSE }}
@@ -204,7 +206,8 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           REGISTRY: ghcr.io
-          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-snowfield
+          IMAGE_NAME: snowfield
+          IMAGE: ghcr.io/${{ github.repository_owner }}/snosi-${{ env.IMAGE_NAME }}
         run: |
           # Push with version tag
           skopeo copy \
@@ -224,7 +227,7 @@ jobs:
           # These are picked up by mkosi.postoutput script
           CREATED_DATE: ${{ steps.date.outputs.date }}
           DEFAULT_TAG: ${{ steps.version.outputs.tag }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}-snowfieldloaded
+          IMAGE_NAME: snowfieldloaded
           IMAGE_DESC: ${{ env.IMAGE_DESC }}
           IMAGE_KEYWORDS: ${{ env.IMAGE_KEYWORDS }}
           IMAGE_LICENSE: ${{ env.IMAGE_LICENSE }}
@@ -238,7 +241,8 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           REGISTRY: ghcr.io
-          IMAGE: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-snowfieldloaded
+          IMAGE_NAME: snowfield-loaded
+          IMAGE: ghcr.io/${{ github.repository_owner }}/snosi-${{ env.IMAGE_NAME }}
         run: |
           # Push with version tag
           skopeo copy \
