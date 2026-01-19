@@ -19,12 +19,6 @@ fi
 # Clean up .old files
 rm -f /*.old || true
 
-# Move Incus to /usr/share/factory/opt/incus for tmpfiles.d symlinking
-if [[ -d /opt/incus ]]; then
-    echo "Relocating Incus to /usr/share/factory/opt/incus..."
-    mkdir -p /usr/share/factory/opt
-    mv /opt/incus /usr/share/factory/opt/
-fi
 
 # Update os-release info
 echo "Updating os-release..."
