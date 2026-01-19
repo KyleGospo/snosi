@@ -48,7 +48,8 @@ fi
 # Build annotations with GitHub Actions variables (with fallbacks for local builds)
 CREATED_DATE="${CREATED_DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
 REPO_OWNER="${GITHUB_REPOSITORY_OWNER:-frostyard}"
-REPO_NAME="${IMAGE_NAME:-$IMAGE_ID}"
+REPO_NAME="${REPO_NAME:-snosi}"
+IMAGE_NAME="${IMAGE_ID:-snosi}"
 COMMIT_SHA="${GITHUB_SHA:-main}"
 DESCRIPTION="${IMAGE_DESC:-Snow Linux OS Image}"
 VERSION="${DEFAULT_TAG:-$IMAGE_VERSION}"
@@ -60,7 +61,7 @@ LOGO_URL="${IMAGE_LOGO_URL:-}"
 ANNOTATIONS=$(jq -n \
     --arg created "$CREATED_DATE" \
     --arg desc "$DESCRIPTION" \
-    --arg title "$REPO_NAME" \
+    --arg title "$IMAGE_NAME" \
     --arg version "$VERSION" \
     --arg vendor "$REPO_OWNER" \
     --arg source "https://github.com/$REPO_OWNER/$REPO_NAME/blob/$COMMIT_SHA/mkosi.conf" \

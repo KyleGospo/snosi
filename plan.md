@@ -148,3 +148,12 @@ Because of this, profiles have been named with required precedence hints in the 
 ## Warning
 
 actions in this branch are not correct yet!
+
+## TODO
+
+- [ ] rework image and OCI env vars
+- [ ] snowfield cert into snow image for mokutil
+- [ ] remove incus from snow
+- [ ] remove docker from snow
+- [ ] test and fix incus and docker extensions. Not expected to work as-is.
+- [ ] investigate isolating sandbox keys/conf per image -- don't add nordvpn repo to images that don't need it, for example

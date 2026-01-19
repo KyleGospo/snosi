@@ -9,6 +9,7 @@ on:
 
 env:
   IMAGE_NAME: snosi
+  REPO_NAME: snosi
   IMAGE_DESC: "Snow Linux - A minimal bootc-enabled OS image"
   IMAGE_KEYWORDS: "linux,os,bootc,systemd,debian"
   IMAGE_LICENSE: Apache-2.0
@@ -96,21 +97,6 @@ jobs:
         run: |
           sudo -E mkosi build
           sudo ./sysextmv.sh
-      - name: Build snow
-        env:
-          # These are picked up by mkosi.postoutput script
-          CREATED_DATE: ${{ steps.date.outputs.date }}
-          DEFAULT_TAG: ${{ steps.version.outputs.tag }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          IMAGE_DESC: ${{ env.IMAGE_DESC }}
-          IMAGE_KEYWORDS: ${{ env.IMAGE_KEYWORDS }}
-          IMAGE_LICENSE: ${{ env.IMAGE_LICENSE }}
-          IMAGE_LOGO_URL: ${{ env.IMAGE_LOGO_URL }}
-          # These are automatically available from GitHub context
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-        run: |
-          sudo -E mkosi --profile 10-image-snow --profile 20-kernel-backports --profile 80-finalize-bootc --profile 90-output-oci build
       - name: Publish sysexts to frostyard repo
         if: github.event_name != 'pull_request'
         uses: frostyard/repogen/.github/actions/publish-to-r2@main
@@ -124,6 +110,22 @@ jobs:
           packages-dir: ./output/sysexts
           package-type: sysext # or sysext
           base-url: https://repository.frostyard.org # required for sysext
+      - name: Build snow
+        env:
+          # These are picked up by mkosi.postoutput script
+          CREATED_DATE: ${{ steps.date.outputs.date }}
+          DEFAULT_TAG: ${{ steps.version.outputs.tag }}
+          IMAGE_NAME: snow
+          IMAGE_DESC: ${{ env.IMAGE_DESC }}
+          IMAGE_KEYWORDS: ${{ env.IMAGE_KEYWORDS }}
+          IMAGE_LICENSE: ${{ env.IMAGE_LICENSE }}
+          IMAGE_LOGO_URL: ${{ env.IMAGE_LOGO_URL }}
+          # These are automatically available from GitHub context
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          sudo -E mkosi --profile 10-image-snow --profile 20-kernel-backports --profile 80-finalize-bootc --profile 90-output-oci build
+
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
         run: skopeo login ghcr.io -u ${{ github.actor }} --password ${{ secrets.GHCR_PAT }}
