@@ -151,10 +151,10 @@ actions in this branch are not correct yet!
 
 ## TODO
 
-- [ ] rework image and OCI env vars
-- [ ] podman & friends as sysext, removed from all images by default
+- [x] rework image and OCI env vars
+- [x] podman & friends as sysext, removed from all images by default
 - [ ] snowfield cert into snow image for mokutil
-- [ ] remove incus from snow
-- [ ] remove docker from snow
+- [x] remove incus from snow
+- [x] remove docker from snow
 - [ ] test and fix incus and docker extensions. Not expected to work as-is.
 - [ ] investigate isolating sandbox keys/conf per image -- don't add nordvpn repo to images that don't need it, for example
