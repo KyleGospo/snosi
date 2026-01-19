@@ -152,6 +152,7 @@ actions in this branch are not correct yet!
 ## TODO
 
 - [ ] rework image and OCI env vars
+- [ ] podman & friends as sysext, removed from all images by default
 - [ ] snowfield cert into snow image for mokutil
 - [ ] remove incus from snow
 - [ ] remove docker from snow
