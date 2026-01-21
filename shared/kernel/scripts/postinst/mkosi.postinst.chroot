@@ -18,4 +18,3 @@ fi
 
 # Clean up .old files
 rm -f /*.old || true
-
