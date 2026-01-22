@@ -10,4 +10,5 @@ mkosi.crt
 .mkosi-private
 .envrc
 mkosi.images/base/mkosi.extra/usr/share/homebrew.tar.zst
-/home/bjk/projects/frostyard/snosi/mkosi.profiles/snow/mkosi.extra/usr/share/homebrew.tar.zst
+mkosi.profiles/snow/mkosi.extra/usr/share/homebrew.tar.zst
+shared/snow/tree/usr/share/homebrew.tar.zst
