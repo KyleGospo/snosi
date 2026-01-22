@@ -14,7 +14,8 @@ rm -rf "$DESTINATION"
 git clone --depth 1 "$REPOSITORY" "$DESTINATION"
 # remove the .git directory if it exists
 rm -rf "$DESTINATION/.git"
-# set the permissions to 755 for all files and directories in the hotedge directory
-chmod -R 755 "$DESTINATION"
+# set the permissions: 755 for directories and 644 for files in the hotedge directory
+find "$DESTINATION" -type d -exec chmod 755 {} +
+find "$DESTINATION" -type f -exec chmod 644 {} +
 # print a message indicating that the hotedge extension has been installed
 echo "Hotedge GNOME Shell extension installed to $DESTINATION"
