@@ -112,7 +112,9 @@ jobs:
           packages-dir: ./output/sysexts
           package-type: sysext # or sysext
           base-url: https://repository.frostyard.org # required for sysext
-      - uses: ryand56/r2-upload-action@latest
+      - name: Upload manifests to R2
+        if: github.event_name != 'pull_request'
+        uses: ryand56/r2-upload-action@latest
         with:
           r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
           r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
