@@ -1,6 +1,9 @@
 name: Build Image Variants
 
 on:
+  repository_dispatch:
+    types:
+      - build
   push:
     branches: [main]
   pull_request:
