@@ -14,6 +14,7 @@ git clone https://github.com/ostreedev/ostree.git --depth 1 /tmp/ostree
 pushd /tmp/ostree
 git submodule update --init
 env NOCONFIGURE=1 ./autogen.sh
+ac_cv_func_open_tree=yes \
 ./configure \
     --prefix=/usr \
     --libdir="/usr/lib/${MULTIARCH}" \
