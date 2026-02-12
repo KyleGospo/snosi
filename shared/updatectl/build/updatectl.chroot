@@ -45,6 +45,12 @@ ninja -C build updatectl systemd-sysupdated units/systemd-sysupdated.service
 install -Dm755 build/updatectl "$DESTDIR/usr/bin/updatectl"
 install -Dm755 build/systemd-sysupdated "$DESTDIR/usr/lib/systemd/systemd-sysupdated"
 
+# Fix RUNPATH: manual install preserves the build-tree rpath ($ORIGIN/src/shared)
+# but libsystemd-shared-257.so lives in /usr/lib/x86_64-linux-gnu/systemd/
+LIBDIR=$(pkg-config --variable=libdir systemd)/systemd
+patchelf --set-rpath "$LIBDIR" "$DESTDIR/usr/bin/updatectl"
+patchelf --set-rpath "$LIBDIR" "$DESTDIR/usr/lib/systemd/systemd-sysupdated"
+
 # Install service unit (generated from Jinja2 template during build)
 install -Dm644 build/units/systemd-sysupdated.service \
     "$DESTDIR/usr/lib/systemd/system/systemd-sysupdated.service"

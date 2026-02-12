@@ -4,7 +4,7 @@ default:
     just --list --unsorted
 
 clean:
-    mkosi clean
+    mkosi clean -ff
 
 
 sysexts: clean
