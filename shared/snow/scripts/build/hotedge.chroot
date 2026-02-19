@@ -7,16 +7,16 @@ set -euo pipefail
 
 DESTINATION="$SRCDIR/shared/snow/tree/usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca"
 source "$SRCDIR/shared/download/verified-download.sh"
-TMPDIR=$(mktemp -d)
-trap 'rm -rf "$TMPDIR"' EXIT
-ARCHIVE="$TMPDIR/hotedge.tar.gz"
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+ARCHIVE="$TMP/hotedge.tar.gz"
 
 # remove any existing hotedge directory
 rm -rf "$DESTINATION"
 verified_download "hotedge" "$ARCHIVE"
-tar -xzf "$ARCHIVE" -C "$TMPDIR"
+tar -xzf "$ARCHIVE" -C "$TMP"
 
-SOURCE_DIR=$(find "$TMPDIR" -maxdepth 1 -type d -name 'hotedge-*' | head -n 1)
+SOURCE_DIR=$(find "$TMP" -maxdepth 1 -type d -name 'hotedge-*' | head -n 1)
 if [[ -z "$SOURCE_DIR" ]]; then
     echo "Error: failed to locate extracted hotedge source directory" >&2
     exit 1

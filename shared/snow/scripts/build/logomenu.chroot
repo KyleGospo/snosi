@@ -7,9 +7,9 @@ set -euo pipefail
 
 DESTINATION="$SRCDIR/shared/snow/tree/usr/share/gnome-shell/extensions/logomenu@aryan_k"
 source "$SRCDIR/shared/download/verified-download.sh"
-TMPDIR=$(mktemp -d)
-trap 'rm -rf "$TMPDIR"' EXIT
-ARCHIVE="$TMPDIR/logomenu.tar.gz"
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+ARCHIVE="$TMP/logomenu.tar.gz"
 
 # remove any existing logomenu directory
 rm -rf "$DESTINATION"
