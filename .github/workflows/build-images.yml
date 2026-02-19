@@ -80,7 +80,7 @@ jobs:
         run: echo "tag=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: setup-mkosi
-        uses: systemd/mkosi@main
+        uses: systemd/mkosi@3c3a08fb07d27fbe473625aa0725655cfb2c68bf
 
       - name: Build Image
         run: |
@@ -122,7 +122,7 @@ jobs:
           sudo ./manifestmv.sh
       - name: Upload manifests to R2
         if: github.event_name != 'pull_request'
-        uses: ryand56/r2-upload-action@latest
+        uses: ryand56/r2-upload-action@b801a390acbdeb034c5e684ff5e1361c06639e7c
         with:
           r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
           r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}

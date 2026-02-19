@@ -217,6 +217,7 @@ External repositories are configured in `mkosi.sandbox/etc/apt/` for packages no
 ## CI/CD Pipeline
 
 The project uses GitHub Actions for automated builds and publishing:
+All third-party workflow actions are pinned to specific commit SHAs for reproducibility and supply-chain safety.
 
 ### build.yml - System Extensions
 
