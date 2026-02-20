@@ -14,6 +14,8 @@ The project produces:
 | **snowloaded**      | snow + Edge + VSCode + Bitwarden + Incus            | OCI archive   |
 | **snowfield**       | snow with linux-surface kernel for Surface devices  | OCI archive   |
 | **snowfieldloaded** | snowfield + Edge + VSCode + Bitwarden + Incus       | OCI archive   |
+| **cayo**            | Headless server with podman + backports kernel      | OCI archive   |
+| **cayoloaded**      | cayo + Docker + Incus (baked in)                    | OCI archive   |
 | **1password-cli**   | 1Password CLI tool                                  | sysext        |
 | **debdev**          | Debian development tools (debootstrap, distro-info) | sysext        |
 | **dev**             | Build essentials, Python, cmake, valgrind, gdb      | sysext        |
@@ -30,11 +32,13 @@ The project produces:
                 │                               │
              sysexts                         profiles
     ┌────┬────┬────┬────┬────┬────┐            │
-    │    │    │    │    │    │    │          snow ────────────────────┐
-  1pass debdev dev docker incus podman        │                      │
-                                    ┌─────────┼─────────┐            │
-                                    │         │         │            │
-                               snowloaded  snowfield  snowfieldloaded
+    │    │    │    │    │    │    │     ┌───────┴───────┐
+  1pass debdev dev docker incus podman │               │
+                                     snow            cayo
+                               ┌──────┼──────┐        │
+                               │      │      │    cayoloaded
+                          snowloaded  │  snowfieldloaded
+                                  snowfield
 ```
 
 ### Base Image
@@ -69,6 +73,8 @@ Profiles in `mkosi.profiles/` define complete image variants by composing shared
 
 ```
 mkosi.profiles/
+├── cayo/           ← Headless server + podman
+├── cayoloaded/     ← cayo + Docker + Incus
 ├── snow/           ← GNOME desktop + backports kernel
 ├── snowfield/      ← GNOME desktop + Surface kernel
 ├── snowloaded/     ← snow + extra packages (Edge, Incus)
@@ -91,11 +97,19 @@ shared/
 │       ├── finalize/          ← OCI finalization scripts
 │       └── postoutput/        ← OCI tagging scripts
 ├── packages/
+│   ├── cayo/mkosi.conf        ← Server packages + podman (~155 lines)
 │   ├── snow/mkosi.conf        ← GNOME desktop packages (~490 lines)
 │   ├── edge/mkosi.conf        ← Microsoft Edge browser
 │   ├── vscode/mkosi.conf      ← Visual Studio Code
 │   ├── bitwarden/mkosi.conf   ← Bitwarden password manager
+│   ├── docker-onimage/        ← Docker CE for baked-in images
+│   ├── virt-base/mkosi.conf   ← Headless Incus virtualization
 │   └── virt/mkosi.conf        ← Incus virtualization
+├── cayo/
+│   ├── tree/                  ← Extra files overlaid into cayo image
+│   └── scripts/
+│       ├── build/             ← Build-time scripts (brew)
+│       └── postinstall/       ← Post-installation customizations
 └── snow/
     ├── tree/                  ← Extra files overlaid into image
     └── scripts/
@@ -150,6 +164,8 @@ Include=%D/shared/outformat/oci/mkosi.conf    # OCI output format
 | **snowfield**       | surface   | —                              | `kernel/surface`, `packages/snow`, `outformat/oci`                          |
 | **snowloaded**      | backports | Edge, VSCode, Bitwarden, Incus | + `packages/edge`, `packages/vscode`, `packages/bitwarden`, `packages/virt` |
 | **snowfieldloaded** | surface   | Edge, VSCode, Bitwarden, Incus | + `packages/edge`, `packages/vscode`, `packages/bitwarden`, `packages/virt` |
+| **cayo**            | backports | —                              | `kernel/backports`, `packages/cayo`, `outformat/oci`                        |
+| **cayoloaded**      | backports | Docker, Incus                  | + `packages/docker-onimage`, `packages/virt-base`                           |
 
 ## Building Images
 
@@ -177,6 +193,12 @@ just snowfield
 # Build loaded variants
 just snowloaded
 just snowfieldloaded
+
+# Build cayo server image
+just cayo
+
+# Build cayo with docker + incus
+just cayoloaded
 
 # Clean build artifacts
 just clean
@@ -233,7 +255,7 @@ Triggered on push/PR to main, this workflow:
 
 Triggered on push/PR to main or via repository dispatch, this workflow:
 
-1. Runs a matrix build of all 4 profiles (snow, snowloaded, snowfield, snowfieldloaded)
+1. Runs a matrix build of all 6 profiles (cayo, cayoloaded, snow, snowloaded, snowfield, snowfieldloaded)
 2. Pushes OCI images to GitHub Container Registry (ghcr.io) with version and `latest` tags
 3. Uploads manifests to R2 for tracking
 
