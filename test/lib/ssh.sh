@@ -15,6 +15,7 @@ SSH_OPTS=(
     -o UserKnownHostsFile=/dev/null
     -o LogLevel=ERROR
     -o ConnectTimeout=5
+    -o BatchMode=yes
 )
 
 # ssh_keygen - Generate a temporary ED25519 keypair.

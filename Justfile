@@ -1,7 +1,7 @@
 set dotenv-load := true
 
 just := "/home/linuxbrew/.linuxbrew/bin/just"
-mkosi := "/home/bjk/.local/bin/mkosi"
+mkosi := `which mkosi`
 
 default:
     {{just}} --list --unsorted

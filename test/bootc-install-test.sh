@@ -92,19 +92,31 @@ else
     # Local OCI directory or archive
     [[ -e "$INPUT" ]] || { echo "Error: Path does not exist: $INPUT" >&2; exit 1; }
 
-    IMAGE_REF="localhost/snosi-test:latest"
-    IMAGE_LOADED="$IMAGE_REF"
+    local_ref="localhost/snosi-test-raw:latest"
 
     if [[ -d "$INPUT" ]]; then
         echo "Loading OCI directory: $INPUT"
-        skopeo copy "oci:$INPUT" "containers-storage:$IMAGE_REF"
+        skopeo copy "oci:$INPUT" "containers-storage:$local_ref"
     elif [[ -f "$INPUT" ]]; then
         echo "Loading OCI archive: $INPUT"
-        skopeo copy "oci-archive:$INPUT" "containers-storage:$IMAGE_REF"
+        skopeo copy "oci-archive:$INPUT" "containers-storage:$local_ref"
     else
         echo "Error: $INPUT is not a file or directory" >&2
         exit 1
     fi
+
+    # Flatten and re-layer through podman to produce tar layers compatible
+    # with composefs-rs. mkosi's Python tarfile output contains empty PAX
+    # extension headers that composefs-rs cannot parse.
+    IMAGE_REF="localhost/snosi-test:latest"
+    IMAGE_LOADED="$IMAGE_REF"
+    echo "Re-layering image through podman export/import..."
+    cid=$(podman create --pull=never "$local_ref" /bin/true)
+    podman export "$cid" | podman import \
+        --change 'LABEL containers.bootc=1' \
+        - "$IMAGE_REF"
+    podman rm "$cid" >/dev/null
+    podman rmi -f "$local_ref" 2>/dev/null || true
 
     echo "Image loaded as: $IMAGE_REF"
 fi
@@ -146,6 +158,29 @@ podman run --rm --privileged --pid=host \
         /work/disk.raw
 
 echo "Installation complete"
+
+# ---------------------------------------------------------------
+# Step 4b - Inject SSH key into installed disk
+# ---------------------------------------------------------------
+echo ""
+echo "=== Step 4b: Inject SSH key ==="
+loop=$(losetup --find --show --partscan "$WORK_DIR/disk.raw")
+mkdir -p "$WORK_DIR/mnt"
+mount "${loop}p3" "$WORK_DIR/mnt"
+
+# Inject SSH key into the composefs state directory.
+# composefs-backend layout: state/os/default/var/ maps to /var at runtime,
+# and /root is a symlink to /var/roothome.
+# bootc's --root-ssh-authorized-keys doesn't work with composefs-backend yet.
+ssh_dir="$WORK_DIR/mnt/state/os/default/var/roothome/.ssh"
+mkdir -p "$ssh_dir"
+cp "${SSH_KEY}.pub" "$ssh_dir/authorized_keys"
+chmod 700 "$ssh_dir"
+chmod 600 "$ssh_dir/authorized_keys"
+echo "Injected SSH key into disk"
+
+umount "$WORK_DIR/mnt"
+losetup -d "$loop"
 
 # ---------------------------------------------------------------
 # Step 5 - Boot VM

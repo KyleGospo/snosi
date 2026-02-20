@@ -24,8 +24,17 @@ check() {
 
 echo "# Tier 1: Installation validation"
 
-check "System is running" \
-    systemctl is-system-running --wait --timeout=120
+# Wait for boot to complete (SSH can be ready before all services finish).
+# Accept "degraded" since graphical services (GDM) fail in headless VMs.
+sys_state="starting"
+for _ in $(seq 1 60); do
+    sys_state=$(systemctl is-system-running 2>/dev/null || true)
+    [[ "$sys_state" == "starting" ]] || break
+    sleep 2
+done
+echo "# system state: $sys_state"
+check "System has booted" \
+    test "$sys_state" = "running" -o "$sys_state" = "degraded"
 
 # shellcheck disable=SC2016
 check "Root filesystem is read-only" \
