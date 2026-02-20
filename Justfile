@@ -27,3 +27,6 @@ snowfield: clean
 
 snowfieldloaded: clean
     mkosi --profile snowfieldloaded  build
+
+test-install image="output/snow":
+    ./test/bootc-install-test.sh {{image}}
