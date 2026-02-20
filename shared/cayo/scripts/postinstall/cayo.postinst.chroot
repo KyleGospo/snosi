@@ -6,8 +6,6 @@ set -euo pipefail
 
 echo "Running post-installation customizations..."
 
-env
-
 # Update os-release info
 echo "Updating os-release..."
 if [[ -f /usr/lib/os-release ]]; then
@@ -54,15 +52,8 @@ systemctl enable media.mount
 systemctl enable opt.mount
 systemctl enable usr-local.mount
 
-# Add build information to os-release
-# echo "BUILD_ID=\"$BUILD_ID\"" >> /usr/lib/os-release
-
 # remove bls-garbage-collect from /etc/systemd/system/basic.garget.wants
 rm -rf /etc/systemd/system/basic.target.wants/bls-garbage-collect.service
-
-# Remove fish desktop entry
-rm -f /usr/share/applications/fish.desktop
-
 
 # Generate package list
 echo "Generating package list..."

@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+set -euo pipefail
 
 # Set up brew
 BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
