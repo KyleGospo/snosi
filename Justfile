@@ -7,31 +7,31 @@ default:
     {{just}} --list --unsorted
 
 clean:
-    sudo {{just}} _clean
+    sudo PATH="$PATH" {{just}} _clean
 
 sysexts:
-    sudo {{just}} _sysexts
+    sudo PATH="$PATH" {{just}} _sysexts
 
 snow:
-    sudo {{just}} _snow
+    sudo PATH="$PATH" {{just}} _snow
 
 snowloaded:
-    sudo {{just}} _snowloaded
+    sudo PATH="$PATH" {{just}} _snowloaded
 
 snowfield:
-    sudo {{just}} _snowfield
+    sudo PATH="$PATH" {{just}} _snowfield
 
 snowfieldloaded:
-    sudo {{just}} _snowfieldloaded
+    sudo PATH="$PATH" {{just}} _snowfieldloaded
 
 cayo:
-    sudo {{just}} _cayo
+    sudo PATH="$PATH" {{just}} _cayo
 
 cayoloaded:
-    sudo {{just}} _cayoloaded
+    sudo PATH="$PATH" {{just}} _cayoloaded
 
 test-install image="output/snow":
-    sudo {{just}} _test-install {{image}}
+    sudo PATH="$PATH" {{just}} _test-install {{image}}
 
 # Private targets (run as root via sudo)
 
