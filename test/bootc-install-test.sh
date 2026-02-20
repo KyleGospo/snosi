@@ -141,6 +141,7 @@ podman run --rm --privileged --pid=host \
         --skip-fetch-check \
         --composefs-backend \
         --filesystem btrfs \
+        --karg console=ttyS0 \
         --root-ssh-authorized-keys /run/ssh-key.pub \
         /work/disk.raw
 
