@@ -140,6 +140,7 @@ podman run --rm --privileged --pid=host \
         --via-loopback \
         --skip-fetch-check \
         --composefs-backend \
+        --filesystem btrfs \
         --root-ssh-authorized-keys /run/ssh-key.pub \
         /work/disk.raw
 
