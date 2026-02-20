@@ -44,4 +44,4 @@ ${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/lib
 ${SUDO} setcap cap_net_admin+eip /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
 
 # Remove unneeded Rsyslog config
-rm -f /etc/rsyslog.d/AzureVPNClient.conf
+${SUDO} rm -f /etc/rsyslog.d/AzureVPNClient.conf
