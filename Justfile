@@ -1,7 +1,9 @@
 set dotenv-load := true
 
+just := "/home/linuxbrew/.linuxbrew/bin/just"
+
 default:
-    just --list --unsorted
+    {{just}} --list --unsorted
 
 clean:
     mkosi clean -ff
