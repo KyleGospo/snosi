@@ -7,7 +7,7 @@ set -euo pipefail
 
 
 REPOSITORY=https://github.com/AlexanderVanhee/bazaar-companion.git
-DESTINATION="$SRCDIR/shared/snow/tree/usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/"
+DESTINATION="$SRCDIR/shared/snow/tree/usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io"
 
 # remove any existing bazaar-companion directory
 rm -rf "$DESTINATION"
@@ -17,10 +17,13 @@ git clone --depth 1 "$REPOSITORY" "/tmp/bazaar-companion"
 
 # Move subdirectory into the extension folder
 mkdir -p "$DESTINATION"
-mv /tmp/bazaar-companion/src/* "$DESTINATION"
+mv /tmp/bazaar-companion/src/* "$DESTINATION/"
 
 # set the permissions: 755 for directories and 644 for files in the hotedge directory
 find "$DESTINATION" -type d -exec chmod 755 {} +
 find "$DESTINATION" -type f -exec chmod 644 {} +
+
+sed '/"shell-version"/a\    "48",' "$DESTINATION/metadata.json"
+
 # print a message indicating that the bazaar-companion extension has been installed
 echo "Bazaar Companion GNOME Shell extension installed to $DESTINATION"
