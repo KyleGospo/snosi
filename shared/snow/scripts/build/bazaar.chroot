@@ -23,7 +23,7 @@ mv /tmp/bazaar-companion/src/* "$DESTINATION/"
 find "$DESTINATION" -type d -exec chmod 755 {} +
 find "$DESTINATION" -type f -exec chmod 644 {} +
 
-sed '/"shell-version"/a\    "48",' "$DESTINATION/metadata.json"
+sed -i '/"shell-version"/a\    "48",' "$DESTINATION/metadata.json"
 
 # print a message indicating that the bazaar-companion extension has been installed
 echo "Bazaar Companion GNOME Shell extension installed to $DESTINATION"
