@@ -8,20 +8,20 @@ snosi builds immutable, bootable OCI container images based on Debian Trixie. Th
 
 The project produces:
 
-| Image               | Description                                         | Output Format |
-| ------------------- | --------------------------------------------------- | ------------- |
-| **snow**            | GNOME desktop with backports kernel                 | OCI archive   |
-| **snowloaded**      | snow + Edge + VSCode + Bitwarden + Incus            | OCI archive   |
-| **snowfield**       | snow with linux-surface kernel for Surface devices  | OCI archive   |
-| **snowfieldloaded** | snowfield + Edge + VSCode + Bitwarden + Incus       | OCI archive   |
-| **cayo**            | Headless server with podman + backports kernel      | OCI archive   |
-| **cayoloaded**      | cayo + Docker + Incus (baked in)                    | OCI archive   |
-| **1password-cli**   | 1Password CLI tool                                  | sysext        |
-| **debdev**          | Debian development tools (debootstrap, distro-info) | sysext        |
-| **dev**             | Build essentials, Python, cmake, valgrind, gdb      | sysext        |
-| **docker**          | Docker CE container runtime                         | sysext        |
-| **incus**           | Incus container/VM manager                          | sysext        |
-| **podman**          | Podman + Distrobox                                  | sysext        |
+| Image               | Description                                                     | Output Format |
+| ------------------- | --------------------------------------------------------------- | ------------- |
+| **snow**            | GNOME desktop with backports kernel                             | OCI archive   |
+| **snowloaded**      | snow + Edge + VSCode + Bitwarden + Incus + Azure VPN            | OCI archive   |
+| **snowfield**       | snow with linux-surface kernel for Surface devices              | OCI archive   |
+| **snowfieldloaded** | snowfield + Edge + VSCode + Bitwarden + Incus + Azure VPN       | OCI archive   |
+| **cayo**            | Headless server with podman + backports kernel                  | OCI archive   |
+| **cayoloaded**      | cayo + Docker + Incus (baked in)                                | OCI archive   |
+| **1password-cli**   | 1Password CLI tool                                              | sysext        |
+| **debdev**          | Debian development tools (debootstrap, distro-info)             | sysext        |
+| **dev**             | Build essentials, Python, cmake, valgrind, gdb                  | sysext        |
+| **docker**          | Docker CE container runtime                                     | sysext        |
+| **incus**           | Incus container/VM manager                                      | sysext        |
+| **podman**          | Podman + Distrobox                                              | sysext        |
 
 ## Architecture
 
