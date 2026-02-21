@@ -17,6 +17,7 @@ The project produces:
 | **cayo**            | Headless server with podman + backports kernel                  | OCI archive   |
 | **cayoloaded**      | cayo + Docker + Incus (baked in)                                | OCI archive   |
 | **1password-cli**   | 1Password CLI tool                                              | sysext        |
+| **azurevpn**        | Azure VPN Client                                                | sysext        |
 | **debdev**          | Debian development tools (debootstrap, distro-info)             | sysext        |
 | **dev**             | Build essentials, Python, cmake, valgrind, gdb                  | sysext        |
 | **docker**          | Docker CE container runtime                                     | sysext        |
