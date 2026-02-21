@@ -36,14 +36,15 @@ ${SUDO} sed -i \
     /usr/share/polkit-1/rules.d/microsoft-azurevpnclient.rules
 
 # Fix library paths after migration from /opt
-${SUDO} patchelf --set-rpath '$ORIGIN/lib' /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
-${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/libflutter_secure_storage_linux_plugin.so
-${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/libflutter_window_close_plugin.so
-${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/libLinuxCore.so
-${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/liburl_launcher_linux_plugin.so
-${SUDO} patchelf --set-rpath '$ORIGIN' /usr/lib/microsoft-azurevpnclient/lib/libXplatSharedLibrary.so
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/lib/libflutter_secure_storage_linux_plugin.so
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/lib/libflutter_window_close_plugin.so
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/lib/libLinuxCore.so
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/lib/liburl_launcher_linux_plugin.so
+${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/microsoft-azurevpnclient/lib/libXplatSharedLibrary.so
 
 # Fix executable permissions
+# FIXME: This change is lost upon the image being built. See workaround in microsoft-azurevpn-workaround.service
 ${SUDO} setcap cap_net_admin+eip /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
 
 # Remove unneeded Rsyslog config
