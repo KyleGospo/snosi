@@ -135,6 +135,7 @@ jobs:
             "$IMAGE:latest" \
             "docker://$IMAGE:latest"
       - name: Move manifests
+        if: github.event_name != 'pull_request'
         run: |
           sudo ./manifestmv.sh
       - name: Upload manifests to R2
