@@ -63,7 +63,7 @@ The shared sysext postoutput script (`shared/sysext/postoutput/sysext-postoutput
 - `shared/download/` - Verified download system: `checksums.json` pins URLs+SHA256s, `verified-download.sh` provides the `verified_download()` helper
 - `shared/kernel/` - Kernel configs (backports, surface, stock) and dracut scripts
 - `shared/packages/` - Package set definitions, some with postinstall scripts for relocation
-- `shared/outformat/oci/` - OCI output format config, finalize, and postoutput scripts
+- `shared/outformat/image/` - Image output format config (directory), finalize scripts, and `buildah-package.sh` for OCI packaging
 - `shared/sysext/postoutput/` - Shared sysext postoutput logic
 - `mkosi.sandbox/etc/apt/` - External APT repo configs (Docker, Incus, linux-surface, Frostyard)
 
