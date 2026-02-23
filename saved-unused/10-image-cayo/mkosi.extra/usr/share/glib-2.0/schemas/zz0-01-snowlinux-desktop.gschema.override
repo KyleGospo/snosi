@@ -9,4 +9,4 @@ enable-hot-corners=false
 button-layout='appmenu:minimize,maximize,close'
 
 [org.gnome.desktop.app-folders]
-folder-children=['Utilities', 'Containers', 'Microsoft', 'AppStores', 'System']
+folder-children=['Utilities', 'Containers', 'Microsoft', 'System']

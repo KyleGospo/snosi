@@ -3,11 +3,6 @@ apps=['microsoft-azurevpnclient.desktop']
 name='Microsoft'
 translate=false
 
-[org/gnome/desktop/app-folders/folders/AppStores]
-apps=['bbrew.desktop', 'snap-store_snap-store.desktop']
-name='App Stores'
-translate=false
-
 [org/gnome/desktop/app-folders/folders/Containers]
 apps=['io.github.dvlv.boxbuddyrs.desktop', 'com.ranfdev.DistroShelf.desktop', 'io.podman_desktop.PodmanDesktop.desktop', 'com.github.marhkb.Pods.desktop']
 categories=['Distrobox']
