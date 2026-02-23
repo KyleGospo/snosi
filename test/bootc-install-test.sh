@@ -4,10 +4,10 @@
 # Loads an OCI image, installs it to a virtual disk via bootc, boots a QEMU VM,
 # and runs tiered test scripts over SSH.
 #
-# Usage: ./test/bootc-install-test.sh <oci-image-path-or-registry-ref>
+# Usage: ./test/bootc-install-test.sh <rootfs-directory-or-registry-ref>
 #
 # Examples:
-#   ./test/bootc-install-test.sh output/snow              # OCI directory from mkosi
+#   ./test/bootc-install-test.sh output/snow              # rootfs directory from mkosi
 #   ./test/bootc-install-test.sh ghcr.io/frostyard/snow:latest  # registry ref
 set -euo pipefail
 
@@ -33,9 +33,9 @@ IMAGE_LOADED=""     # non-empty if we loaded an image into podman
 IMAGE_REF=""        # the podman-resolvable image reference
 
 usage() {
-    echo "Usage: $0 <oci-image-path-or-registry-ref>" >&2
+    echo "Usage: $0 <rootfs-directory-or-registry-ref>" >&2
     echo "" >&2
-    echo "  oci-image-path    Local OCI directory or archive (e.g. output/snow)" >&2
+    echo "  rootfs-directory  Local rootfs directory from mkosi (e.g. output/snow)" >&2
     echo "  registry-ref      Container registry reference (e.g. ghcr.io/frostyard/snow:latest)" >&2
     exit 1
 }
@@ -89,34 +89,18 @@ if is_registry_ref "$INPUT"; then
     echo "Pulling registry image: $IMAGE_REF"
     podman pull "$IMAGE_REF"
 else
-    # Local OCI directory or archive
+    # Local rootfs directory
     [[ -e "$INPUT" ]] || { echo "Error: Path does not exist: $INPUT" >&2; exit 1; }
+    [[ -d "$INPUT" ]] || { echo "Error: $INPUT is not a directory" >&2; exit 1; }
 
-    local_ref="localhost/snosi-test-raw:latest"
-
-    if [[ -d "$INPUT" ]]; then
-        echo "Loading OCI directory: $INPUT"
-        skopeo copy "oci:$INPUT" "containers-storage:$local_ref"
-    elif [[ -f "$INPUT" ]]; then
-        echo "Loading OCI archive: $INPUT"
-        skopeo copy "oci-archive:$INPUT" "containers-storage:$local_ref"
-    else
-        echo "Error: $INPUT is not a file or directory" >&2
-        exit 1
-    fi
-
-    # Flatten and re-layer through podman to produce tar layers compatible
-    # with composefs-rs. mkosi's Python tarfile output contains empty PAX
-    # extension headers that composefs-rs cannot parse.
     IMAGE_REF="localhost/snosi-test:latest"
     IMAGE_LOADED="$IMAGE_REF"
-    echo "Re-layering image through podman export/import..."
-    cid=$(podman create --pull=never "$local_ref" /bin/true)
-    podman export "$cid" | podman import \
-        --change 'LABEL containers.bootc=1' \
-        - "$IMAGE_REF"
-    podman rm "$cid" >/dev/null
-    podman rmi -f "$local_ref" 2>/dev/null || true
+
+    # Package rootfs directory into OCI image using buildah.
+    # Uses mount + cp -a + commit to preserve SUID/SGID, xattrs, capabilities.
+    REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+    "$REPO_ROOT/shared/outformat/image/buildah-package.sh" \
+        "$INPUT" "$IMAGE_REF"
 
     echo "Image loaded as: $IMAGE_REF"
 fi
