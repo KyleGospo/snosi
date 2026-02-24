@@ -31,11 +31,6 @@ container=$(buildah from scratch)
 # Mount and copy rootfs preserving all metadata
 mountpoint=$(buildah mount "$container")
 cp -a "$ROOTFS_DIR"/. "$mountpoint"/
-
-if [ -x "$mountpoint/usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient" ]; then
-  setcap "cap_net_admin+eip" "$mountpoint/usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient"
-fi
-
 buildah umount "$container"
 
 # Apply standard bootc labels
