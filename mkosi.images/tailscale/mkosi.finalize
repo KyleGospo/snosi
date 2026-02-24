@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: LGPL-2.1-or-later
-set -e
+set -euo pipefail
 
 # Capture /etc/default/tailscaled to factory defaults for tmpfiles.d to restore at boot.
 # The tailscaled.service unit requires EnvironmentFile=/etc/default/tailscaled.
