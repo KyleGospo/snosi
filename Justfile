@@ -1,6 +1,6 @@
 set dotenv-load := true
 
-just := "/home/linuxbrew/.linuxbrew/bin/just"
+just := `which just`
 mkosi := `which mkosi`
 
 default:
