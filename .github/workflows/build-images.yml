@@ -151,6 +151,7 @@ jobs:
             "$IMAGE:${{ steps.version.outputs.tag }}" \
             "$IMAGE:latest"
           sudo buildah push \
+            --compression-format=zstd:chunked \
             --creds="${{ github.actor }}:${{ secrets.GHCR_PAT }}" \
             "$IMAGE:latest" \
             "docker://$IMAGE:latest"
