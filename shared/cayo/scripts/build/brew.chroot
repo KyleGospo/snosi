@@ -15,6 +15,7 @@ touch /.dockerenv
 env --ignore-environment "PATH=/usr/bin:/bin:/usr/sbin:/sbin" "HOME=/home/linuxbrew" "NONINTERACTIVE=1" /usr/bin/bash /tmp/brew-install
 mkdir -p /out && \
 tar --zstd -cvf "$SRCDIR/shared/cayo/tree/usr/share/homebrew.tar.zst" "/home/linuxbrew/.linuxbrew"
+setfattr -n user.component -v "linuxbrew" "$SRCDIR/shared/cayo/tree/usr/share/homebrew.tar.zst"
 
 rm -f /tmp/brew-install
 rm -f /.dockerenv
