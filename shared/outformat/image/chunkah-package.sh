@@ -14,7 +14,7 @@ CONFIG=$(podman inspect "$IMAGE_REF")
 # Note: We need --privileged for some podman-in-podman/mount scenarios or just standard access
 LOADED=$(podman run --rm \
     --security-opt label=type:unconfined_t \
-    --mount=type=image,src="$IMAGE_REF",dest=/chunkah \
+    --mount=type=image,src="$IMAGE_REF",dst=/chunkah \
     -e "CHUNKAH_CONFIG_STR=$CONFIG" \
     quay.io/jlebon/chunkah:latest build --max-layers $MAX_LAYERS | podman load)
 
