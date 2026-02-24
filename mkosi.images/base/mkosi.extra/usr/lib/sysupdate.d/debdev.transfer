@@ -1,12 +1,12 @@
 [Transfer]
-Features=devel
+Features=debdev
 Verify=false
 
 [Source]
 Type=url-file
 Path=https://repository.frostyard.org/ext/debdev/
 MatchPattern=debdev_@v_@a.raw.zst \
-             debdevdev_@v_@a.raw.xz \
+             debdev_@v_@a.raw.xz \
              debdev_@v_@a.raw.gz \
              debdev_@v_@a.raw
 

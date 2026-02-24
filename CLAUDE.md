@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 snosi is a bootable container image build system using [mkosi](https://github.com/systemd/mkosi) to produce Debian Trixie-based immutable OS images and system extensions (sysexts). Images are deployed via bootc/systemd-boot with atomic updates.
 
-**Outputs:** 4 OCI desktop images (snow, snowloaded, snowfield, snowfieldloaded) and 6 sysext overlay images (1password-cli, debdev, dev, docker, incus, podman).
+**Outputs:** 4 OCI desktop images (snow, snowloaded, snowfield, snowfieldloaded) and 7 sysext overlay images (1password-cli, debdev, dev, docker, incus, podman, tailscale).
 
 ## Build Commands
 
@@ -14,7 +14,7 @@ Requires: mkosi v24+, just, root/sudo access.
 
 ```bash
 just                    # List targets
-just sysexts            # Build base + all 6 sysexts
+just sysexts            # Build base + all 7 sysexts
 just snow               # Build snow desktop image
 just snowloaded         # Build snowloaded variant
 just snowfield          # Build snowfield (Surface kernel)
@@ -53,8 +53,11 @@ Scripts execute in order: **BuildScripts** (in chroot) -> **PostInstallationScri
 ### Sysext Constraints
 
 Sysexts can ONLY provide files under `/usr`. They cannot modify `/etc` or `/var` at runtime. Configs needed in `/etc` must be:
+
 1. Captured to `/usr/share/factory/etc` during build (via `mkosi.finalize`)
 2. Injected at boot via systemd-tmpfiles
+
+Every sysext must have matching `<name>.transfer` and `<name>.feature` files in `mkosi.images/base/mkosi.extra/usr/lib/sysupdate.d/`. The `.transfer` file defines how systemd-sysupdate downloads the sysext; the `.feature` file provides metadata and defaults to `Enabled=false`. Use existing files as templates.
 
 The shared sysext postoutput script (`shared/sysext/postoutput/sysext-postoutput.sh`) handles versioned naming and manifest processing. It requires the `KEYPACKAGE` env var set in each sysext's `mkosi.conf`.
 
