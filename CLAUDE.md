@@ -76,6 +76,7 @@ The shared sysext postoutput script (`shared/sysext/postoutput/sysext-postoutput
 - Build scripts running in chroot use `.chroot` extension
 - External downloads must go through `verified_download()` with entries in `checksums.json`
 - Pin external URLs to specific versions/commits, never `latest` or branch names
+- When adding a new verified download, also add a corresponding update check to `.github/workflows/check-dependencies.yml`
 
 ## User Service Enablement in Chroot
 
