@@ -1,0 +1,13 @@
+[Unit]
+Description=Nix package manager bind mount
+Documentation=man:nix(1)
+Before=local-fs.target
+
+[Mount]
+What=/var/lib/nix
+Where=/nix
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target
