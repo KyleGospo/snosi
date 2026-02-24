@@ -2,7 +2,7 @@
 set -euo pipefail
 
 IMAGE_REF="$1"
-MAX_LAYERS=100
+MAX_LAYERS=64
 
 echo "==> Chunkifying $IMAGE_REF..."
 
