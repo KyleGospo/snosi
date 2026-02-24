@@ -45,7 +45,7 @@ ${SUDO} patchelf --set-rpath '/usr/lib/microsoft-azurevpnclient/lib' /usr/lib/mi
 
 # Fix executable permissions
 # FIXME: This change is lost upon the image being built. See workaround in microsoft-azurevpn-workaround.service
-${SUDO} setcap cap_net_admin+eip /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
+${SUDO} /usr/sbin/setcap cap_net_admin+eip /usr/lib/microsoft-azurevpnclient/microsoft-azurevpnclient
 
 # Remove unneeded Rsyslog config
 ${SUDO} rm -f /etc/rsyslog.d/AzureVPNClient.conf
