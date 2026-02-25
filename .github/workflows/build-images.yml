@@ -119,7 +119,6 @@ jobs:
             "org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.REPO_NAME }}/${{ github.sha }}/README.md"
 
       - name: Chunk image
-        if: github.event_name != 'pull_request'
         env:
           IMAGE: ghcr.io/${{ github.repository_owner }}/${{ matrix.profile }}
         run: |
