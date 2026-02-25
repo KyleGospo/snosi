@@ -2,8 +2,8 @@
 set -euo pipefail
 
 IMAGE_REF="$1"
+SOURCE_DATE_EPOCH="$2"
 MAX_LAYERS="${MAX_LAYERS:-64}"
-SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-}"
 
 echo "==> Chunkifying $IMAGE_REF (Max Layers: $MAX_LAYERS) - Date: $SOURCE_DATE_EPOCH"
 
