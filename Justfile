@@ -33,6 +33,9 @@ cayoloaded:
 test-install image="output/snow":
     sudo PATH="$PATH" {{just}} _test-install {{image}}
 
+run-qemu image="output/snow":
+    sudo PATH="$PATH" DISK_SIZE=50G {{just}} _run-qemu {{image}}
+
 # Private targets (run as root via sudo)
 
 [private]
@@ -70,3 +73,7 @@ _cayoloaded: _clean
 [private]
 _test-install image="output/snow":
     ./test/bootc-install-test.sh {{image}}
+
+[private]
+_run-qemu image="output/snow":
+    ./test/run-qemu.sh {{image}}

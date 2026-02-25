@@ -30,7 +30,6 @@ source "$SCRIPT_DIR/lib/vm.sh"
 # Internal state
 WORK_DIR=""
 IMAGE_LOADED=""     # non-empty if we loaded an image into podman
-IMAGE_REF=""        # the podman-resolvable image reference
 
 usage() {
     echo "Usage: $0 <rootfs-directory-or-registry-ref>" >&2
@@ -61,13 +60,6 @@ cleanup() {
     fi
 }
 
-# Determine whether a string looks like a registry reference (contains / but is not a local path).
-is_registry_ref() {
-    local ref="$1"
-    # If the path exists on disk, it is not a registry ref
-    [[ ! -e "$ref" ]] && [[ "$ref" == */* ]]
-}
-
 # --- Argument parsing ---
 [[ $# -eq 1 ]] || usage
 INPUT="$1"
@@ -83,26 +75,10 @@ echo "Temp directory: $WORK_DIR"
 # ---------------------------------------------------------------
 echo ""
 echo "=== Step 1: Load image ==="
+load_image "$INPUT" "localhost/snosi-test:latest"
 
-if is_registry_ref "$INPUT"; then
-    IMAGE_REF="$INPUT"
-    echo "Pulling registry image: $IMAGE_REF"
-    podman pull "$IMAGE_REF"
-else
-    # Local rootfs directory
-    [[ -e "$INPUT" ]] || { echo "Error: Path does not exist: $INPUT" >&2; exit 1; }
-    [[ -d "$INPUT" ]] || { echo "Error: $INPUT is not a directory" >&2; exit 1; }
-
-    IMAGE_REF="localhost/snosi-test:latest"
+if ! is_registry_ref "$INPUT"; then
     IMAGE_LOADED="$IMAGE_REF"
-
-    # Package rootfs directory into OCI image using buildah.
-    # Uses mount + cp -a + commit to preserve SUID/SGID, xattrs, capabilities.
-    REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-    "$REPO_ROOT/shared/outformat/image/buildah-package.sh" \
-        "$INPUT" "$IMAGE_REF"
-
-    echo "Image loaded as: $IMAGE_REF"
 fi
 
 # ---------------------------------------------------------------
@@ -124,24 +100,9 @@ create_disk "$WORK_DIR/disk.raw"
 # ---------------------------------------------------------------
 echo ""
 echo "=== Step 4: Install image to disk ==="
-podman run --rm --privileged --pid=host \
-    -v /var/lib/containers:/var/lib/containers \
-    -v /dev:/dev \
-    -v "$WORK_DIR:/work" \
+install_to_disk "$WORK_DIR/disk.raw" \
     -v "${SSH_KEY}.pub:/run/ssh-key.pub:ro" \
-    --security-opt label=type:unconfined_t \
-    "$IMAGE_REF" \
-    bootc install to-disk \
-        --generic-image \
-        --via-loopback \
-        --skip-fetch-check \
-        --composefs-backend \
-        --filesystem btrfs \
-        --karg console=ttyS0 \
-        --root-ssh-authorized-keys /run/ssh-key.pub \
-        /work/disk.raw
-
-echo "Installation complete"
+    -- --root-ssh-authorized-keys /run/ssh-key.pub
 
 # ---------------------------------------------------------------
 # Step 4b - Inject SSH key into installed disk
