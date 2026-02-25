@@ -1,8 +1,13 @@
 #!/bin/bash
 # SPDX-License-Identifier: LGPL-2.1-or-later
-# QEMU VM lifecycle library for bootc install testing.
+# VM lifecycle and image management library for bootc testing.
+# Provides image loading, bootc installation, QEMU VM control, and disk helpers.
 # Sourced by test scripts; not executed directly.
 set -euo pipefail
+
+# Resolve project root relative to this library file.
+_VM_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$_VM_LIB_DIR/../.." && pwd)"
 
 DISK_SIZE="${DISK_SIZE:-10G}"
 VM_MEMORY="${VM_MEMORY:-4096}"
@@ -11,6 +16,108 @@ SSH_PORT="${SSH_PORT:-2222}"
 QEMU_PID="${QEMU_PID:-}"
 QEMU_CONSOLE_LOG="${QEMU_CONSOLE_LOG:-}"
 DISK_IMAGE="${DISK_IMAGE:-}"
+
+# Determine whether a string looks like a registry reference (contains / but is not a local path).
+is_registry_ref() {
+    local ref="$1"
+    # If the path exists on disk, it is not a registry ref
+    [[ ! -e "$ref" ]] && [[ "$ref" == */* ]]
+}
+
+# load_image - Load an image into podman storage.
+# Usage: load_image <rootfs-directory-or-registry-ref> <local-image-ref>
+#
+# If the input is a registry ref, pulls it and sets IMAGE_REF to the ref.
+# If the input is a local rootfs directory, packages it via buildah and
+# tags it as <local-image-ref>.
+#
+# Sets IMAGE_REF to the podman-resolvable image reference on success.
+load_image() {
+    local input="$1"
+    local local_ref="${2:-localhost/snosi:latest}"
+
+    if is_registry_ref "$input"; then
+        IMAGE_REF="$input"
+        echo "Pulling registry image: $IMAGE_REF"
+        podman pull "$IMAGE_REF"
+    else
+        # Local rootfs directory
+        [[ -e "$input" ]] || { echo "Error: Path does not exist: $input" >&2; exit 1; }
+        [[ -d "$input" ]] || { echo "Error: $input is not a directory" >&2; exit 1; }
+
+        IMAGE_REF="$local_ref"
+
+        # Package rootfs directory into OCI image using buildah.
+        # Uses mount + cp -a + commit to preserve SUID/SGID, xattrs, capabilities.
+        "$PROJECT_ROOT/shared/outformat/image/buildah-package.sh" \
+            "$input" "$IMAGE_REF"
+
+        echo "Image loaded as: $IMAGE_REF"
+    fi
+}
+
+# install_to_disk - Install a podman image to a raw disk via bootc.
+# Usage: install_to_disk <disk-path> [extra-podman-args...] [-- extra-bootc-args...]
+#
+# Runs bootc install to-disk inside a privileged podman container.
+# The disk image must already exist (see create_disk).
+# Requires IMAGE_REF to be set (via load_image).
+#
+# Extra arguments before "--" are passed to `podman run`.
+# Extra arguments after "--" are passed to `bootc install to-disk`.
+#
+# Example:
+#   install_to_disk /tmp/disk.raw \
+#       -v "${SSH_KEY}.pub:/run/ssh-key.pub:ro" \
+#       -- --root-ssh-authorized-keys /run/ssh-key.pub
+install_to_disk() {
+    local disk_path="$1"
+    shift
+
+    [[ -n "${IMAGE_REF:-}" ]] || { echo "Error: IMAGE_REF is not set; call load_image first" >&2; exit 1; }
+    [[ -f "$disk_path" ]] || { echo "Error: Disk image not found: $disk_path (call create_disk first)" >&2; exit 1; }
+
+    # Split remaining args at "--" into podman extras and bootc extras
+    local -a podman_extra=()
+    local -a bootc_extra=()
+    local past_separator=false
+    for arg in "$@"; do
+        if [[ "$arg" == "--" ]]; then
+            past_separator=true
+            continue
+        fi
+        if $past_separator; then
+            bootc_extra+=("$arg")
+        else
+            podman_extra+=("$arg")
+        fi
+    done
+
+    local disk_dir
+    disk_dir="$(dirname "$disk_path")"
+    local disk_name
+    disk_name="$(basename "$disk_path")"
+
+    # Install image to disk via bootc
+    podman run --rm --privileged --pid=host \
+        -v /var/lib/containers:/var/lib/containers \
+        -v /dev:/dev \
+        -v "$disk_dir:/work" \
+        "${podman_extra[@]+"${podman_extra[@]}"}" \
+        --security-opt label=type:unconfined_t \
+        "$IMAGE_REF" \
+        bootc install to-disk \
+        --generic-image \
+        --via-loopback \
+        --skip-fetch-check \
+        --composefs-backend \
+        --filesystem btrfs \
+        --karg console=ttyS0 \
+        "${bootc_extra[@]+"${bootc_extra[@]}"}" \
+        "/work/$disk_name"
+
+    echo "Installation complete"
+}
 
 create_disk() {
     local path="$1"
