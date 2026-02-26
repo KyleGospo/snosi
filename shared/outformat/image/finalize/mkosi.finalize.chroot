@@ -16,6 +16,7 @@ mkdir /boot
 mkdir /root
 mkdir /home
 mkdir /srv
+mkdir /sysroot
 
 # Create /nix as an empty mountpoint for the nix sysext bind-mount
 mkdir -p /nix

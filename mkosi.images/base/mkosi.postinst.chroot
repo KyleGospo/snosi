@@ -18,11 +18,5 @@ systemctl enable media.mount
 systemctl enable opt.mount
 systemctl enable usr-local.mount
 
-# Add needed directory in root for bootc
-mkdir -p /sysroot
-
-# Add build information to os-release
-# echo "BUILD_ID=\"$BUILD_ID\"" >> /usr/lib/os-release
-
 # remove bls-garbage-collect from /etc/systemd/system/basic.garget.wants
 rm -rf /etc/systemd/system/basic.target.wants/bls-garbage-collect.service
