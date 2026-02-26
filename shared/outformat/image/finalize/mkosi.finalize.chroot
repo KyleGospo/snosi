@@ -36,3 +36,9 @@ dpkg-query -W -f='${Package}\n' | while read -r pkgname; do
     fi
   done
 done
+
+# Compile GLib schemas (run last to include all extra trees and overrides)
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+# Compile dconf databases (run last to include all extra trees and keyfiles)
+dconf update
