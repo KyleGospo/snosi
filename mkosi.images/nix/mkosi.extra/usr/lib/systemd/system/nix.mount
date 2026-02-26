@@ -1,6 +1,7 @@
 [Unit]
 Description=Nix package manager bind mount
 Documentation=man:nix(1)
+After=local-fs-pre.target systemd-tmpfiles-setup.service
 Before=local-fs.target
 
 [Mount]
