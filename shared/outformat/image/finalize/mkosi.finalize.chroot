@@ -17,6 +17,8 @@ mkdir /root
 mkdir /home
 mkdir /srv
 
+# Create /nix as an empty mountpoint for the nix sysext bind-mount
+mkdir -p /nix
 
 # Ensure image first-boot works
 rm -f /etc/machine-id
